@@ -133,6 +133,36 @@
 					themeStore.setTheme('purple-pro')
 					close()
 				}
+			},
+			{
+				id: 'start-polling',
+				name: 'Start Data Polling',
+				description: 'Begin collecting sensor data',
+				icon: Search,
+				action: () => {
+					dashboardStore.startDataPolling()
+					close()
+				}
+			},
+			{
+				id: 'stop-polling',
+				name: 'Stop Data Polling',
+				description: 'Pause sensor data collection',
+				icon: Search,
+				action: () => {
+					dashboardStore.stopDataPolling()
+					close()
+				}
+			},
+			{
+				id: 'save-layout',
+				name: 'Save Current Layout',
+				description: 'Save the current dashboard arrangement',
+				icon: Settings,
+				action: () => {
+					dashboardStore.toggleLeftPanel('layouts')
+					close()
+				}
 			}
 		]
 	}

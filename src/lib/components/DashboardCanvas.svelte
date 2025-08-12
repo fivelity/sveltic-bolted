@@ -41,6 +41,7 @@
 
 	function handleMouseDown(event: MouseEvent, widget: any) {
 		event.preventDefault()
+		event.stopPropagation()
 		
 		const rect = canvasElement.getBoundingClientRect()
 		dragState = {

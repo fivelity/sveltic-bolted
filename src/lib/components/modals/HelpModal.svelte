@@ -5,11 +5,15 @@
 
 	const shortcuts = [
 		{ key: 'Ctrl + Shift + P', description: 'Open command palette' },
+		{ key: 'Ctrl + S', description: 'Save current layout' },
+		{ key: 'Ctrl + N', description: 'Add new widget' },
 		{ key: 'Click + Drag', description: 'Move widgets around dashboard' },
 		{ key: 'Right Click', description: 'Open widget context menu' },
+		{ key: 'Double Click Title', description: 'Edit widget or dashboard title' },
 		{ key: 'Escape', description: 'Close modals and dialogs' },
 		{ key: 'Enter', description: 'Confirm edits and actions' },
-		{ key: '↑↓ Arrow Keys', description: 'Navigate command palette' }
+		{ key: '↑↓ Arrow Keys', description: 'Navigate command palette' },
+		{ key: 'Delete', description: 'Remove selected widget' }
 	]
 
 	const faqs = [
@@ -36,6 +40,14 @@
 		{
 			question: 'Can I backup my dashboard configuration?',
 			answer: 'Yes! Go to Settings → Backup & Restore to export your complete configuration including layouts, themes, and alert rules to a JSON file.'
+		},
+		{
+			question: 'How do I control data polling?',
+			answer: 'Use the play/pause button in the header to start or stop data collection. You can also adjust the polling rate in the Settings panel.'
+		},
+		{
+			question: 'Can I resize widgets?',
+			answer: 'Yes! Select any widget and use the editor panel to adjust width and height. Widgets snap to the grid for perfect alignment.'
 		}
 	]
 </script>

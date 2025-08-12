@@ -132,7 +132,9 @@
 
 	// Auto-save settings when changed
 	$: if (settings) {
-		saveSettings()
+		// Debounce auto-save to prevent excessive saves
+		const timeoutId = setTimeout(saveSettings, 500)
+		return () => clearTimeout(timeoutId)
 	}
 </script>
 

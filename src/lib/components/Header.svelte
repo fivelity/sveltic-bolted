@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { Search, Grid, Layers, Settings, Palette, MoreHorizontal, Command } from 'lucide-svelte'
+	import { Search, Grid, Layers, Settings, Palette, MoreHorizontal, Command, Play, Pause } from 'lucide-svelte'
 	import { dashboardStore } from '$lib/stores/dashboardStore'
+	import { dataStore } from '$lib/stores/dataStore'
 	import { themeStore } from '$lib/stores/themeStore'
 	import CommandPalette from './CommandPalette.svelte'
 	import Modal from './Modal.svelte'
@@ -21,6 +22,7 @@
 
 	$: dashboard = $dashboardStore
 	$: theme = $themeStore
+	$: data = $dataStore
 
 	// Keyboard shortcuts
 	onMount(() => {
@@ -129,6 +131,20 @@
 	</div>
 
 	<div class="header-right">
+		<div class="data-controls">
+			<button
+				class="control-btn {data.isPolling ? 'active' : ''}"
+				on:click={() => data.isPolling ? dataStore.stopPolling() : dataStore.startPolling()}
+				title={data.isPolling ? 'Stop Data Polling' : 'Start Data Polling'}
+			>
+				{#if data.isPolling}
+					<Pause size={18} />
+				{:else}
+					<Play size={18} />
+				{/if}
+			</button>
+		</div>
+
 		<div class="grid-controls">
 			<label for="grid-size">Grid Size:</label>
 			<select 

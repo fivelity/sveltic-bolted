@@ -16,7 +16,8 @@
 	}
 
 	function loadLayout(id: string) {
-		if (confirm('Load this layout? Current widgets will be replaced.')) {
+		const layout = dashboard.layouts.find(l => l.id === id)
+		if (layout && confirm(`Load "${layout.name}"? Current widgets will be replaced.`)) {
 			dashboardStore.loadLayout(id)
 		}
 	}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Plus, Play, Pause, Trash2, Bell } from 'lucide-svelte'
 	import { dataSources } from '$lib/stores/dataStore'
+	import { onMount } from 'svelte'
 	import type { AlertRule } from '$lib/types'
 
 	$: sources = dataSources
@@ -78,6 +79,25 @@
 
 	// Initialize
 	loadAlerts()
+
+	// Check alerts periodically
+	onMount(() => {
+		const interval = setInterval(() => {
+			// This would check alert conditions in a real implementation
+			// For now, we'll just simulate occasional triggers
+			if (Math.random() > 0.98) {
+				const activeAlerts = alerts.filter(a => a.enabled)
+				if (activeAlerts.length > 0) {
+					const randomAlert = activeAlerts[Math.floor(Math.random() * activeAlerts.length)]
+					randomAlert.lastTriggered = new Date().toISOString()
+					alerts = [...alerts]
+					saveAlerts()
+				}
+			}
+		}, 5000)
+
+		return () => clearInterval(interval)
+	})
 </script>
 
 <div class="alerts-panel">

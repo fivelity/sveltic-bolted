@@ -16,14 +16,38 @@
 		
 		// Start data polling
 		dataStore.startPolling()
+
+		// Add keyboard shortcuts
+		function handleKeyDown(e: KeyboardEvent) {
+			if (e.ctrlKey && e.key === 's') {
+				e.preventDefault()
+				dashboardStore.toggleLeftPanel('layouts')
+			}
+			if (e.ctrlKey && e.key === 'n') {
+				e.preventDefault()
+				dashboardStore.toggleLeftPanel('widgets')
+			}
+			if (e.key === 'Delete' && dashboardStore.selectedWidgetId) {
+				e.preventDefault()
+				if (confirm('Delete selected widget?')) {
+					dashboardStore.removeWidget(dashboardStore.selectedWidgetId)
+				}
+			}
+		}
+
+		window.addEventListener('keydown', handleKeyDown)
 		
 		mounted = true
 		
 		// Cleanup on unmount
 		return () => {
 			dataStore.stopPolling()
+			window.removeEventListener('keydown', handleKeyDown)
 		}
 	})
+
+	// Access dashboard state for keyboard shortcuts
+	$: dashboard = $dashboardStore
 </script>
 
 {#if mounted}

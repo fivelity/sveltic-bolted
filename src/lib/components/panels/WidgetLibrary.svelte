@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { Gauge, TrendingUp, BarChart3, Type } from 'lucide-svelte'
 	import { dashboardStore } from '$lib/stores/dashboardStore'
+	import { dataStore } from '$lib/stores/dataStore'
 	import type { WidgetType } from '$lib/types'
+
+	$: data = $dataStore
 
 	const widgetTypes: Array<{
 		type: WidgetType
@@ -54,6 +57,10 @@
 <div class="widget-library">
 	<div class="library-description">
 		<p>Choose a widget type to add to your dashboard. Click and drag widgets to position them.</p>
+		<div class="data-status">
+			<span class="status-indicator {data.isPolling ? 'active' : 'inactive'}"></span>
+			Data Polling: {data.isPolling ? 'Active' : 'Stopped'}
+		</div>
 	</div>
 
 	<div class="widget-types">
@@ -173,5 +180,31 @@
 
 	.tip strong {
 		color: var(--text-primary);
+	}
+
+	.data-status {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 8px;
+		font-size: 12px;
+		color: var(--text-secondary);
+	}
+
+	.status-indicator {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--error);
+	}
+
+	.status-indicator.active {
+		background: var(--success);
+		animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
 	}
 </style>

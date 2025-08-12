@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
-import { get } from 'svelte/store'
 import type { Widget, WidgetType, GridSettings, Layout } from '$lib/types'
+import { dataStore } from './dataStore'
 
 interface DashboardState {
 	widgets: Widget[]
@@ -323,6 +323,15 @@ function createDashboardStore() {
 			URL.revokeObjectURL(url)
 		}
 	}
+		// Data polling controls
+		startDataPolling: () => {
+			dataStore.startPolling()
+		},
+
+		stopDataPolling: () => {
+			dataStore.stopPolling()
+		},
+
 }
 
 function getDefaultWidgetSize(type: WidgetType) {

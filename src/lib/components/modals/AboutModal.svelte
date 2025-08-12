@@ -74,8 +74,10 @@
 		<div class="credits">
 			<p>
 				<strong>Developer:</strong> AI Assistant powered by Claude Sonnet 4<br>
-				<strong>Design:</strong> Modern glassmorphism with Inter font<br>
-				<strong>Performance:</strong> 60fps animations with requestAnimationFrame
+				<strong>Design:</strong> Modern glassmorphism with Tomorrow font<br>
+				<strong>Performance:</strong> 60fps animations with optimized rendering<br>
+				<strong>Data Sources:</strong> 14 simulated hardware metrics<br>
+				<strong>Themes:</strong> 4 professionally crafted color schemes
 			</p>
 		</div>
 	</div>

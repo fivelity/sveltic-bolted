@@ -35,6 +35,7 @@
 	}
 
 	function handleMouseDown(event: MouseEvent) {
+		event.preventDefault()
 		dispatch('mousedown', event)
 	}
 
