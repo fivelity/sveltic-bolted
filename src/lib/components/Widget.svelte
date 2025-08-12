@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
-	import { Edit, Copy, Trash2, MoreVertical } from 'lucide-svelte'
+	import { Edit, Copy, Trash2, MoreVertical, FolderPlus, Download } from 'lucide-svelte'
 	import { dashboardStore } from '$lib/stores/dashboardStore'
 	import { dataStore } from '$lib/stores/dataStore'
 	import GaugeWidget from './widgets/GaugeWidget.svelte'
@@ -19,8 +19,11 @@
 	$: metric = data.metrics[widget.dataSource]
 
 	let showContextMenu = false
+	let showSaveDialog = false
 	let contextMenuX = 0
 	let contextMenuY = 0
+	let templateName = ''
+	let isHovering = false
 
 	const widgetComponents = {
 		'gauge': GaugeWidget,
@@ -40,6 +43,14 @@
 		showContextMenu = true
 	}
 
+	function handleMouseEnter() {
+		isHovering = true
+	}
+
+	function handleMouseLeave() {
+		isHovering = false
+	}
+
 	function editWidget() {
 		dashboardStore.selectWidget(widget.id)
 		dashboardStore.toggleLeftPanel('editor')
@@ -48,6 +59,25 @@
 
 	function duplicateWidget() {
 		dashboardStore.duplicateWidget(widget.id)
+		showContextMenu = false
+	}
+
+	function addToLibrary() {
+		templateName = `${widget.title} Template`
+		showSaveDialog = true
+		showContextMenu = false
+	}
+
+	function saveTemplate() {
+		if (templateName.trim()) {
+			dashboardStore.saveWidgetAsTemplate(widget.id, templateName.trim())
+			showSaveDialog = false
+			templateName = ''
+		}
+	}
+
+	function exportWidget() {
+		dashboardStore.exportWidget(widget.id)
 		showContextMenu = false
 	}
 
@@ -60,6 +90,7 @@
 
 	function closeContextMenu() {
 		showContextMenu = false
+		showSaveDialog = false
 	}
 </script>
 
@@ -75,12 +106,17 @@
 	"
 	on:mousedown={handleMouseDown}
 	on:contextmenu={handleContextMenu}
+	on:mouseenter={handleMouseEnter}
+	on:mouseleave={handleMouseLeave}
 	role="button"
 	tabindex="0"
 >
 	<div class="widget-header">
 		<h4 class="widget-title">{widget.title}</h4>
-		<button class="widget-menu-btn" on:click={() => showContextMenu = !showContextMenu}>
+		<button 
+			class="widget-menu-btn {isHovering ? 'visible' : ''}" 
+			on:click={() => showContextMenu = !showContextMenu}
+		>
 			<MoreVertical size={14} />
 		</button>
 	</div>
@@ -108,6 +144,14 @@
 			<Copy size={14} />
 			Duplicate
 		</button>
+		<button on:click={addToLibrary}>
+			<FolderPlus size={14} />
+			Add to Library
+		</button>
+		<button on:click={exportWidget}>
+			<Download size={14} />
+			Export as JSON
+		</button>
 		<div class="menu-divider"></div>
 		<button on:click={removeWidget} class="danger">
 			<Trash2 size={14} />
@@ -116,6 +160,27 @@
 	</div>
 {/if}
 
+{#if showSaveDialog}
+	<div class="save-dialog-backdrop" on:click={closeContextMenu}>
+		<div class="save-dialog glass-intense" on:click|stopPropagation>
+			<h4>Save to Library</h4>
+			<input
+				type="text"
+				class="input"
+				placeholder="Template name"
+				bind:value={templateName}
+				on:keydown={(e) => e.key === 'Enter' && saveTemplate()}
+				autofocus
+			/>
+			<div class="dialog-actions">
+				<button class="btn btn-secondary" on:click={closeContextMenu}>Cancel</button>
+				<button class="btn btn-primary" on:click={saveTemplate} disabled={!templateName.trim()}>
+					Save Template
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
 <style>
 	.widget {
 		position: absolute;
@@ -188,7 +253,7 @@
 		transition: all 0.2s ease;
 	}
 
-	.widget:hover .widget-menu-btn,
+	.widget-menu-btn.visible,
 	.widget.selected .widget-menu-btn {
 		opacity: 1;
 	}
@@ -245,5 +310,42 @@
 		height: 1px;
 		background: var(--border-color);
 		margin: 4px 0;
+	}
+
+	.save-dialog-backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: var(--bg-modal);
+		backdrop-filter: blur(8px);
+		z-index: 10000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.save-dialog {
+		background: var(--bg-widget);
+		border: 1px solid var(--border-color);
+		border-radius: 12px;
+		padding: 24px;
+		width: 400px;
+		max-width: 90vw;
+	}
+
+	.save-dialog h4 {
+		margin: 0 0 16px 0;
+		font-size: 18px;
+		font-weight: 600;
+		color: var(--text-primary);
+	}
+
+	.dialog-actions {
+		display: flex;
+		gap: 8px;
+		justify-content: flex-end;
+		margin-top: 16px;
 	}
 </style>

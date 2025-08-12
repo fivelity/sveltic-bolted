@@ -129,6 +129,22 @@
 	</div>
 
 	<div class="header-right">
+		<div class="grid-controls">
+			<label for="grid-size">Grid:</label>
+			<select 
+				id="grid-size" 
+				class="grid-size-select"
+				value={dashboard.gridSettings.cellSize}
+				on:change={(e) => dashboardStore.setGridSize(parseInt(e.target.value))}
+			>
+				<option value="8">8px</option>
+				<option value="16">16px</option>
+				<option value="32">32px</option>
+				<option value="64">64px</option>
+				<option value="128">128px</option>
+			</select>
+		</div>
+
 		<button
 			class="control-btn {dashboard.snapToGrid ? 'active' : ''}"
 			on:click={() => dashboardStore.toggleSnap()}
@@ -338,6 +354,29 @@
 		align-items: center;
 		justify-content: flex-end;
 		gap: 8px;
+	}
+
+	.grid-controls {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 12px;
+		color: var(--text-secondary);
+	}
+
+	.grid-size-select {
+		background: var(--bg-secondary);
+		border: 1px solid var(--border-color);
+		border-radius: 6px;
+		color: var(--text-primary);
+		font-size: 12px;
+		padding: 4px 8px;
+		cursor: pointer;
+	}
+
+	.grid-size-select:focus {
+		border-color: var(--accent-primary);
+		outline: none;
 	}
 
 	.control-btn {

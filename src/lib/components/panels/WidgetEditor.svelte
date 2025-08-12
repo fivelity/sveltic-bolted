@@ -120,8 +120,8 @@
 							class="input"
 							value={widget.width}
 							on:input={(e) => updateWidget({ width: parseInt(e.target.value) })}
-							min="200"
-							step="10"
+							min="128"
+							step="32"
 						/>
 					</div>
 					<div class="form-group">
@@ -132,8 +132,8 @@
 							class="input"
 							value={widget.height}
 							on:input={(e) => updateWidget({ height: parseInt(e.target.value) })}
-							min="150"
-							step="10"
+							min="128"
+							step="32"
 						/>
 					</div>
 				</div>

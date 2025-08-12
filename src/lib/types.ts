@@ -19,6 +19,15 @@ export interface GridSettings {
 	rows: number
 }
 
+export interface WidgetTemplate {
+	id: string
+	name: string
+	type: WidgetType
+	config: Record<string, any>
+	defaultSize: { width: number; height: number }
+	createdAt: string
+}
+
 export interface Layout {
 	id: string
 	name: string

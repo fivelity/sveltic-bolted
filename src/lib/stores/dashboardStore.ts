@@ -7,6 +7,7 @@ interface DashboardState {
 	gridSettings: GridSettings
 	layouts: Layout[]
 	currentLayoutId: string | null
+	widgetTemplates: WidgetTemplate[]
 	showGrid: boolean
 	snapToGrid: boolean
 	isLeftPanelOpen: boolean
@@ -17,13 +18,14 @@ const initialState: DashboardState = {
 	widgets: [],
 	selectedWidgetId: null,
 	gridSettings: {
-		cellSize: 40,
-		gap: 8,
+		cellSize: 32,
+		gap: 4,
 		cols: 0,
 		rows: 0
 	},
 	layouts: [],
 	currentLayoutId: null,
+	widgetTemplates: [],
 	showGrid: true,
 	snapToGrid: true,
 	isLeftPanelOpen: false,
@@ -79,14 +81,18 @@ function createDashboardStore() {
 		},
 
 		// Widget management
-		addWidget: (type: WidgetType, x = 0, y = 0, width = 200, height = 150) => {
+		addWidget: (type: WidgetType, x = 0, y = 0, width?: number, height?: number) => {
+			const defaultSizes = getDefaultWidgetSize(type)
+			const finalWidth = width || defaultSizes.width
+			const finalHeight = height || defaultSizes.height
+
 			const newWidget: Widget = {
 				id: `widget-${widgetIdCounter++}`,
 				type,
 				x,
 				y,
-				width,
-				height,
+				width: finalWidth,
+				height: finalHeight,
 				title: `${type} Widget`,
 				config: getDefaultConfig(type),
 				dataSource: 'cpu-temp'
@@ -153,6 +159,19 @@ function createDashboardStore() {
 		},
 
 		// Grid settings
+		setGridSize: (size: number) => {
+			// Ensure size is a power of 2 between 8 and 128
+			const validSize = Math.min(128, Math.max(8, size))
+			const powerOf2 = Math.pow(2, Math.round(Math.log2(validSize)))
+			
+			update(state => ({
+				...state,
+				gridSettings: { ...state.gridSettings, cellSize: powerOf2 }
+			}))
+			
+			dashboardStore.persist()
+		},
+
 		updateGridSettings: (settings: Partial<GridSettings>) => {
 			update(state => ({
 				...state,
@@ -244,7 +263,74 @@ function createDashboardStore() {
 			}))
 			
 			dashboardStore.persist()
+		},
+
+		// Widget templates
+		saveWidgetAsTemplate: (widgetId: string, name: string) => {
+			update(state => {
+				const widget = state.widgets.find(w => w.id === widgetId)
+				if (!widget) return state
+
+				const template: WidgetTemplate = {
+					id: `template-${Date.now()}`,
+					name,
+					type: widget.type,
+					config: { ...widget.config },
+					defaultSize: { width: widget.width, height: widget.height },
+					createdAt: new Date().toISOString()
+				}
+
+				return {
+					...state,
+					widgetTemplates: [...state.widgetTemplates, template]
+				}
+			})
+			
+			dashboardStore.persist()
+		},
+
+		exportWidget: (widgetId: string) => {
+			const state = get({ subscribe })
+			const widget = state.widgets.find(w => w.id === widgetId)
+			if (!widget) return
+
+			const exportData = {
+				type: widget.type,
+				title: widget.title,
+				config: widget.config,
+				dataSource: widget.dataSource,
+				size: { width: widget.width, height: widget.height },
+				exportedAt: new Date().toISOString(),
+				version: '1.0'
+			}
+
+			const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+				type: 'application/json'
+			})
+			const url = URL.createObjectURL(blob)
+			
+			const a = document.createElement('a')
+			a.href = url
+			a.download = `${widget.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_widget.json`
+			a.click()
+			
+			URL.revokeObjectURL(url)
 		}
+	}
+}
+
+function getDefaultWidgetSize(type: WidgetType) {
+	switch (type) {
+		case 'gauge':
+			return { width: 256, height: 256 } // 8x8 grid cells (32px each)
+		case 'line-chart':
+			return { width: 384, height: 256 } // 12x8 grid cells
+		case 'bar-chart':
+			return { width: 256, height: 192 } // 8x6 grid cells
+		case 'text-display':
+			return { width: 192, height: 128 } // 6x4 grid cells
+		default:
+			return { width: 256, height: 192 }
 	}
 }
 

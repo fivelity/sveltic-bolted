@@ -66,8 +66,9 @@
 			const { cellSize, gap } = dashboard.gridSettings
 			const totalCellSize = cellSize + gap
 			
-			newX = Math.round(newX / totalCellSize) * totalCellSize
-			newY = Math.round(newY / totalCellSize) * totalCellSize
+			// Snap to grid lines
+			newX = Math.round(newX / cellSize) * cellSize
+			newY = Math.round(newY / cellSize) * cellSize
 		}
 
 		// Keep within bounds

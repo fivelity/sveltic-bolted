@@ -4,26 +4,26 @@
 	export let show: boolean
 	export let gridSettings: GridSettings
 
-	$: ({ cellSize, gap, cols, rows } = gridSettings)
+	$: ({ cellSize } = gridSettings)
 </script>
 
-{#if show && cols > 0 && rows > 0}
+{#if show}
 	<svg class="grid-overlay" width="100%" height="100%">
 		<defs>
 			<pattern
 				id="grid-pattern"
-				width={cellSize + gap}
-				height={cellSize + gap}
+				width={cellSize}
+				height={cellSize}
 				patternUnits="userSpaceOnUse"
 			>
 				<rect
-					width={cellSize}
-					height={cellSize}
+					width={cellSize - 1}
+					height={cellSize - 1}
 					fill="none"
 					stroke="var(--grid-color)"
 					stroke-width="1"
 					stroke-dasharray="2,2"
-					opacity="0.6"
+					opacity="0.4"
 				/>
 			</pattern>
 		</defs>
