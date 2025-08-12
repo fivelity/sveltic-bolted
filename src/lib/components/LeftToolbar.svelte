@@ -76,15 +76,30 @@
 	}
 
 	.toolbar-btn {
-		@apply flex items-center justify-center w-11 h-11 bg-transparent border border-transparent rounded-lg text-white/50 cursor-pointer transition-all duration-200;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: 8px;
+		color: rgba(255, 255, 255, 0.5);
+		cursor: pointer;
+		transition: all 0.2s ease;
 	}
 
 	.toolbar-btn:hover {
-		@apply bg-white/10 text-white border-transparent;
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 1);
+		border-color: transparent;
 	}
 
 	.toolbar-btn.active {
-		@apply bg-cyan-500 text-white border-cyan-500 shadow-[0_4px_12px_rgba(6,182,212,0.3)];
+		background: var(--accent-primary);
+		color: white;
+		border-color: var(--accent-primary);
+		box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 	}
 
 	.panel {

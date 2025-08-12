@@ -136,11 +136,15 @@
 	}
 
 	.metric-name {
-		@apply text-sm font-semibold text-white/80 font-tomorrow;
+		font-size: 14px;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.8);
 	}
 
 	.current-value {
-		@apply text-lg font-bold text-cyan-400 font-tomorrow;
+		font-size: 1.125rem; /* text-lg */
+		font-weight: 700;
+		color: #22d3ee; /* text-cyan-400 */
 	}
 
 	.chart-container {

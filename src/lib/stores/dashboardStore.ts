@@ -81,27 +81,16 @@ function createDashboardStore() {
 		},
 
 		// Widget management
-		addWidget: (type: WidgetType, x?: number, y?: number, width?: number, height?: number) => {
+		addWidget: (type: WidgetType, x = 0, y = 0, width?: number, height?: number) => {
 			const defaultSizes = getDefaultWidgetSize(type)
 			const finalWidth = width || defaultSizes.width
 			const finalHeight = height || defaultSizes.height
-			
-			// Calculate grid-aligned position if not provided
-			let finalX = x ?? 0
-			let finalY = y ?? 0
-			
-			if (x === undefined || y === undefined) {
-				// Find a good position that doesn't overlap
-				const gridSize = 40 // Default grid size
-				finalX = Math.floor(Math.random() * 5) * gridSize * 4
-				finalY = Math.floor(Math.random() * 3) * gridSize * 3
-			}
 
 			const newWidget: Widget = {
 				id: `widget-${widgetIdCounter++}`,
 				type,
-				x: finalX,
-				y: finalY,
+				x,
+				y,
 				width: finalWidth,
 				height: finalHeight,
 				title: `${type} Widget`,

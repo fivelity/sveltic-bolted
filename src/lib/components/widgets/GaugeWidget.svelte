@@ -91,11 +91,16 @@
 	}
 
 	.value {
-		@apply text-3xl font-bold text-cyan-400 leading-none font-tomorrow;
+		font-size: 1.875rem; /* text-3xl */
+		font-weight: 700;
+		color: #22d3ee; /* text-cyan-400 */
+		line-height: 1;
 	}
 
 	.unit {
-		@apply text-xs text-white/60 mt-0.5 font-mono;
+		font-size: 0.75rem; /* text-xs */
+		color: rgba(255, 255, 255, 0.6);
+		margin-top: 2px;
 	}
 
 	.gauge-info {
@@ -103,11 +108,15 @@
 	}
 
 	.metric-name {
-		@apply text-sm font-semibold text-white/80 mb-1 font-tomorrow;
+		font-size: 14px;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.8);
+		margin-bottom: 4px;
 	}
 
 	.range {
-		@apply text-xs text-white/60 font-mono;
+		font-size: 0.75rem; /* text-xs */
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.loading {

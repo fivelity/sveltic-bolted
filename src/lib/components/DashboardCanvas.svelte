@@ -63,14 +63,12 @@
 		let newY = event.clientY - rect.top - dragState.offsetY
 
 		if (dashboard.snapToGrid) {
-			const { cellSize } = dashboard.gridSettings
+			const { cellSize, gap } = dashboard.gridSettings
+			const totalCellSize = cellSize + gap
 			
 			// Snap to grid lines
 			newX = Math.round(newX / cellSize) * cellSize
 			newY = Math.round(newY / cellSize) * cellSize
-		} else {
-			// Smooth 60fps pixel-perfect dragging when snap is off
-			// No additional constraints needed - follows mouse precisely
 		}
 
 		// Keep within bounds

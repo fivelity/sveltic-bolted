@@ -1,11 +1,7 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
 /* CSS Variables for Dynamic Theming */
 :root {
 	/* Dark Space Theme (Default) */
-	--bg-primary: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+	--bg-primary: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
 	--bg-secondary: rgba(255, 255, 255, 0.05);
 	--bg-widget: rgba(255, 255, 255, 0.08);
 	--bg-modal: rgba(0, 0, 0, 0.85);
@@ -89,7 +85,7 @@
 html,
 body {
 	height: 100%;
-	font-family: 'Tomorrow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	overflow: hidden;
 }
 
@@ -101,14 +97,22 @@ body {
 
 /* Glassmorphism Effects */
 .glass {
-	@apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl;
+	background: var(--glass-bg);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid var(--glass-border);
+	border-radius: 12px;
 	box-shadow: 
 		0 4px 6px var(--shadow-dark),
 		inset 0 1px 0 var(--shadow-light);
 }
 
 .glass-intense {
-	@apply bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl;
+	background: var(--bg-widget);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
 	box-shadow: 
 		0 8px 32px var(--shadow-dark),
 		inset 0 1px 0 var(--shadow-light);
@@ -128,28 +132,59 @@ body {
 
 /* Button Styles */
 .btn {
-	@apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm cursor-pointer transition-all duration-200;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border: none;
+	border-radius: 8px;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-decoration: none;
 }
 
 .btn-primary {
-	@apply bg-cyan-500 text-white shadow-md hover:bg-cyan-600 hover:-translate-y-0.5 hover:shadow-lg;
+	background: var(--accent-primary);
+	color: white;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+	background: var(--accent-secondary);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary {
-	@apply bg-white/5 text-white border border-white/10 hover:bg-white/10;
+	background: var(--bg-secondary);
+	color: var(--text-primary);
+	border: 1px solid var(--border-color);
 }
 
-.btn-danger {
-	@apply bg-red-500 text-white hover:bg-red-600 hover:-translate-y-0.5 hover:shadow-lg;
+.btn-secondary:hover {
+	background: var(--bg-widget);
 }
 
 /* Input Styles */
 .input {
-	@apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white font-tomorrow text-sm transition-all duration-200;
+	width: 100%;
+	padding: 12px 16px;
+	background: var(--bg-secondary);
+	border: 1px solid var(--border-color);
+	border-radius: 8px;
+	color: var(--text-primary);
+	font-family: inherit;
+	font-size: 14px;
+	transition: all 0.2s ease;
 }
 
 .input:focus {
-	@apply outline-none border-cyan-500 shadow-[0_0_0_3px_rgba(6,182,212,0.1)];
+	outline: none;
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* Scrollbar Styling */
@@ -181,7 +216,6 @@ body {
 	pointer-events: none;
 	opacity: 0.6;
 	z-index: 1;
-	transition: opacity 0.3s ease;
 }
 
 .grid-overlay.hidden {
@@ -195,15 +229,10 @@ body {
 	min-height: 150px;
 	cursor: move;
 	user-select: none;
-	transition: all 0.2s ease;
+	transition: box-shadow 0.2s ease;
 }
 
 .widget:hover {
-	@apply shadow-2xl border-white/20 -translate-y-0.5;
-}
-
-.widget.selected {
-	@apply shadow-2xl border-cyan-500;
 	box-shadow: 
 		0 8px 32px var(--shadow-dark),
 		inset 0 1px 0 var(--shadow-light),
@@ -212,23 +241,40 @@ body {
 
 .widget.dragging {
 	z-index: 1000;
-	transform: scale(1.02);
+	transform-origin: center;
 	animation: dragPulse 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes dragPulse {
-	from { transform: scale(1.02); }
-	to { transform: scale(1.04); }
+	from { transform: scale(1); }
+	to { transform: scale(1.02); }
 }
 
 /* Modal Styles */
 .modal-backdrop {
-	@apply fixed inset-0 bg-black/85 backdrop-blur-md z-[10000] flex items-center justify-center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: var(--bg-modal);
+	backdrop-filter: blur(8px);
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
 	animation: fadeIn 0.3s ease forwards;
 }
 
 .modal-content {
-	@apply bg-white/8 border border-white/10 rounded-2xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto w-full mx-4;
+	background: var(--bg-widget);
+	border: 1px solid var(--border-color);
+	border-radius: 16px;
+	padding: 32px;
+	max-width: 600px;
+	max-height: 80vh;
+	overflow-y: auto;
 	transform: scale(0.9);
 	animation: modalSlideIn 0.3s ease forwards;
 }
@@ -241,11 +287,6 @@ body {
 	to { 
 		transform: scale(1);
 	}
-}
-
-/* Typography */
-.font-mono {
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
 /* Utility Classes */
