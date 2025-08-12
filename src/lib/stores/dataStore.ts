@@ -77,7 +77,39 @@ function createDataStore() {
 					
 					Object.keys(newMetrics).forEach(id => {
 						const metric = newMetrics[id]
-						const variation = (Math.random() - 0.5) * 10
+						// Create more realistic hardware data patterns
+						let variation = 0
+						const time = Date.now() / 1000
+						
+						switch (id) {
+							case 'cpu-temp':
+								variation = Math.sin(time * 0.1) * 5 + (Math.random() - 0.5) * 3
+								break
+							case 'cpu-load':
+								variation = Math.sin(time * 0.2) * 15 + (Math.random() - 0.5) * 10
+								break
+							case 'gpu-temp':
+								variation = Math.sin(time * 0.15) * 8 + (Math.random() - 0.5) * 4
+								break
+							case 'gpu-load':
+								variation = Math.sin(time * 0.25) * 20 + (Math.random() - 0.5) * 15
+								break
+							case 'ram-usage':
+								variation = Math.sin(time * 0.05) * 10 + (Math.random() - 0.5) * 5
+								break
+							case 'disk-usage':
+								variation = (Math.random() - 0.5) * 2 // Disk usage changes slowly
+								break
+							case 'network-up':
+								variation = Math.abs(Math.sin(time * 0.3)) * 20 + (Math.random() - 0.5) * 5
+								break
+							case 'network-down':
+								variation = Math.abs(Math.sin(time * 0.4)) * 30 + (Math.random() - 0.5) * 8
+								break
+							default:
+								variation = (Math.random() - 0.5) * 10
+						}
+						
 						let newValue = metric.currentValue + variation
 						
 						// Keep within bounds

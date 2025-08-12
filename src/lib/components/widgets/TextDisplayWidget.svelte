@@ -60,24 +60,15 @@
 	}
 
 	.metric-label {
-		font-size: 14px;
-		font-weight: 500;
-		color: rgba(255, 255, 255, 0.6);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		@apply text-sm font-medium text-white/60 uppercase tracking-wide font-tomorrow;
 	}
 
 	.metric-value {
-		line-height: 1;
-		color: #22d3ee; /* text-cyan-400 */
-		font-weight: 700;
-		transition: all 0.3s ease;
+		@apply leading-none text-cyan-400 font-bold transition-all duration-300 font-tomorrow;
 	}
 
 	.unit {
-		font-size: 0.6em;
-		color: rgba(255, 255, 255, 0.6);
-		margin-left: 4px;
+		@apply text-[0.6em] text-white/60 ml-1 font-mono;
 	}
 
 	.change-indicator {

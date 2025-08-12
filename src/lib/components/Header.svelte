@@ -326,9 +326,7 @@
 	}
 
 	.search-bar span {
-		color: rgba(255, 255, 255, 0.4);
-		font-size: 14px;
-		flex: 1;
+		@apply text-white/40 text-sm flex-1 font-tomorrow;
 	}
 
 	.hotkey {
@@ -337,15 +335,7 @@
 	}
 
 	.hotkey span {
-		padding: 2px 6px;
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-		font-size: 10px;
-		color: var(--text-secondary);
-		font-family: monospace;
-		min-width: auto;
-		flex: none;
+		@apply px-1.5 py-0.5 bg-white/10 border border-white/10 rounded text-xs text-white/60 font-mono min-w-0 flex-none;
 	}
 
 	.header-right {

@@ -219,9 +219,9 @@
 		</div>
 
 		<div class="editor-actions">
-			<button class="btn btn-primary" on:click={() => dashboardStore.closeLeftPanel()}>
+			<button class="btn btn-primary font-tomorrow" on:click={() => dashboardStore.closeLeftPanel()}>
 				<Save size={16} />
-				Done Editing
+				{isNewWidget ? 'Add Widget' : 'Update Widget'}
 			</button>
 		</div>
 	{:else}
