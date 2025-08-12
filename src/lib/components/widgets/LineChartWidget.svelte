@@ -138,13 +138,13 @@
 	.metric-name {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--text-primary);
+		color: rgba(255, 255, 255, 0.8);
 	}
 
 	.current-value {
-		font-size: 18px;
+		font-size: 1.125rem; /* text-lg */
 		font-weight: 700;
-		color: var(--accent-primary);
+		color: #22d3ee; /* text-cyan-400 */
 	}
 
 	.chart-container {

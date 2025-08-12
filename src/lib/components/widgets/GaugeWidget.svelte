@@ -91,15 +91,15 @@
 	}
 
 	.value {
-		font-size: 20px;
+		font-size: 1.875rem; /* text-3xl */
 		font-weight: 700;
-		color: var(--text-primary);
+		color: #22d3ee; /* text-cyan-400 */
 		line-height: 1;
 	}
 
 	.unit {
-		font-size: 12px;
-		color: var(--text-secondary);
+		font-size: 0.75rem; /* text-xs */
+		color: rgba(255, 255, 255, 0.6);
 		margin-top: 2px;
 	}
 
@@ -110,13 +110,13 @@
 	.metric-name {
 		font-size: 14px;
 		font-weight: 600;
-		color: var(--text-primary);
+		color: rgba(255, 255, 255, 0.8);
 		margin-bottom: 4px;
 	}
 
 	.range {
-		font-size: 12px;
-		color: var(--text-muted);
+		font-size: 0.75rem; /* text-xs */
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.loading {

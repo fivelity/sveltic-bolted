@@ -126,14 +126,17 @@
 		transition: box-shadow 0.2s ease, transform 0.1s ease;
 		min-width: 200px;
 		min-height: 150px;
-		background: var(--bg-widget);
+		background: rgba(255, 255, 255, 0.05);
+		backdrop-filter: blur(16px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 16px;
 	}
 
 	.widget:hover {
 		box-shadow: 
-			0 8px 32px var(--shadow-dark),
-			inset 0 1px 0 var(--shadow-light),
-			0 0 0 1px var(--accent-primary);
+			0 25px 50px rgba(0, 0, 0, 0.25);
+		border-color: rgba(255, 255, 255, 0.2);
+		transform: translateY(-2px);
 	}
 
 	.widget.selected {
@@ -162,8 +165,8 @@
 
 	.widget-title {
 		font-size: 14px;
-		font-weight: 600;
-		color: var(--text-primary);
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.8);
 		margin: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;

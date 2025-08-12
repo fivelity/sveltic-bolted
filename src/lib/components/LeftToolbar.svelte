@@ -81,26 +81,25 @@
 		justify-content: center;
 		width: 44px;
 		height: 44px;
-		background: var(--bg-secondary);
-		border: 1px solid var(--border-color);
+		background: transparent;
+		border: 1px solid transparent;
 		border-radius: 8px;
-		color: var(--text-secondary);
+		color: rgba(255, 255, 255, 0.5);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.toolbar-btn:hover {
-		background: var(--bg-widget);
-		color: var(--text-primary);
-		border-color: var(--accent-primary);
-		transform: translateY(-1px);
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 1);
+		border-color: transparent;
 	}
 
 	.toolbar-btn.active {
 		background: var(--accent-primary);
 		color: white;
 		border-color: var(--accent-primary);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 	}
 
 	.panel {

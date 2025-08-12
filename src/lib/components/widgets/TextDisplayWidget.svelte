@@ -62,19 +62,21 @@
 	.metric-label {
 		font-size: 14px;
 		font-weight: 500;
-		color: var(--text-secondary);
+		color: rgba(255, 255, 255, 0.6);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
 
 	.metric-value {
 		line-height: 1;
+		color: #22d3ee; /* text-cyan-400 */
+		font-weight: 700;
 		transition: all 0.3s ease;
 	}
 
 	.unit {
 		font-size: 0.6em;
-		color: var(--text-secondary);
+		color: rgba(255, 255, 255, 0.6);
 		margin-left: 4px;
 	}
 

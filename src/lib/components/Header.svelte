@@ -225,8 +225,8 @@
 	}
 
 	.title {
-		font-size: 20px;
-		font-weight: 700;
+		font-size: 1.25rem; /* text-xl */
+		font-weight: 600; /* font-semibold */
 		color: var(--text-primary);
 		cursor: pointer;
 		margin: 0;
@@ -290,8 +290,8 @@
 		align-items: center;
 		gap: 12px;
 		padding: 8px 16px;
-		background: var(--bg-secondary);
-		border: 1px solid var(--border-color);
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 20px;
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -300,12 +300,17 @@
 	}
 
 	.search-bar:hover {
+		border-color: rgba(255, 255, 255, 0.2);
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.search-bar:focus-within {
 		border-color: var(--accent-primary);
-		background: var(--bg-widget);
+		box-shadow: 0 0 0 1px var(--accent-primary);
 	}
 
 	.search-bar span {
-		color: var(--text-muted);
+		color: rgba(255, 255, 255, 0.4);
 		font-size: 14px;
 		flex: 1;
 	}
@@ -317,9 +322,9 @@
 
 	.hotkey span {
 		padding: 2px 6px;
-		background: var(--bg-widget);
+		background: rgba(255, 255, 255, 0.1);
 		border: 1px solid var(--border-color);
-		border-radius: 4px;
+		border-radius: 6px;
 		font-size: 10px;
 		color: var(--text-secondary);
 		font-family: monospace;

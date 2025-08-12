@@ -1,15 +1,15 @@
 /* CSS Variables for Dynamic Theming */
 :root {
 	/* Dark Space Theme (Default) */
-	--bg-primary: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 100%);
+	--bg-primary: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
 	--bg-secondary: rgba(255, 255, 255, 0.05);
 	--bg-widget: rgba(255, 255, 255, 0.08);
 	--bg-modal: rgba(0, 0, 0, 0.85);
 	--text-primary: #ffffff;
 	--text-secondary: rgba(255, 255, 255, 0.7);
 	--text-muted: rgba(255, 255, 255, 0.5);
-	--accent-primary: #6366f1;
-	--accent-secondary: #8b5cf6;
+	--accent-primary: #06b6d4;
+	--accent-secondary: #0891b2;
 	--border-color: rgba(255, 255, 255, 0.1);
 	--shadow-light: rgba(255, 255, 255, 0.1);
 	--shadow-dark: rgba(0, 0, 0, 0.3);
