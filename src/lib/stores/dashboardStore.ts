@@ -13,6 +13,7 @@ interface DashboardState {
 	snapToGrid: boolean
 	isLeftPanelOpen: boolean
 	leftPanelMode: 'widgets' | 'editor' | 'layouts' | 'alerts' | 'settings'
+	nextWidgetId: number
 }
 
 const initialState: DashboardState = {
@@ -30,13 +31,13 @@ const initialState: DashboardState = {
 	showGrid: true,
 	snapToGrid: true,
 	isLeftPanelOpen: false,
-	leftPanelMode: 'widgets'
+	leftPanelMode: 'widgets',
+	nextWidgetId: 1
 }
 
 function createDashboardStore() {
 	const { subscribe, set, update } = writable<DashboardState>(initialState)
 
-	let widgetIdCounter = 1
 
 	return {
 		subscribe,
@@ -55,10 +56,12 @@ function createDashboardStore() {
 							gridSettings: {
 								...state.gridSettings,
 								...data.gridSettings
-							}
+							},
+							// Ensure nextWidgetId is set correctly
+							nextWidgetId: data.nextWidgetId || 1
 						}))
 						
-						// Update widget ID counter to prevent duplicate keys
+						// Update nextWidgetId based on existing widgets to prevent duplicate keys
 						if (data.widgets && data.widgets.length > 0) {
 							const maxId = Math.max(
 								...data.widgets
@@ -67,8 +70,11 @@ function createDashboardStore() {
 									.map((id: string) => parseInt(id.replace('widget-', ''), 10))
 									.filter((num: number) => !isNaN(num))
 							)
-							if (maxId >= widgetIdCounter) {
-								widgetIdCounter = maxId + 1
+							if (maxId >= 0) {
+								update(state => ({
+									...state,
+									nextWidgetId: maxId + 1
+								}))
 							}
 						}
 					} catch (e) {
@@ -88,7 +94,8 @@ function createDashboardStore() {
 						currentLayoutId: state.currentLayoutId,
 						showGrid: state.showGrid,
 						snapToGrid: state.snapToGrid,
-						gridSettings: state.gridSettings
+						gridSettings: state.gridSettings,
+						nextWidgetId: state.nextWidgetId
 					}))
 					return state
 				})
@@ -101,21 +108,20 @@ function createDashboardStore() {
 			const finalWidth = width || defaultSizes.width
 			const finalHeight = height || defaultSizes.height
 
-			const newWidget: Widget = {
-				id: `widget-${widgetIdCounter++}`,
-				type,
-				x,
-				y,
-				width: finalWidth,
-				height: finalHeight,
-				title: `${type} Widget`,
-				config: getDefaultConfig(type),
-				dataSource: 'cpu-temp'
-			}
-			
 			update(state => ({
 				...state,
-				widgets: [...state.widgets, newWidget]
+				widgets: [...state.widgets, {
+					id: `widget-${state.nextWidgetId}`,
+					type,
+					x,
+					y,
+					width: finalWidth,
+					height: finalHeight,
+					title: `${type} Widget`,
+					config: getDefaultConfig(type),
+					dataSource: 'cpu-temp'
+				}],
+				nextWidgetId: state.nextWidgetId + 1
 			}))
 			
 			dashboardStore.persist()
@@ -149,7 +155,7 @@ function createDashboardStore() {
 
 				const newWidget: Widget = {
 					...widget,
-					id: `widget-${widgetIdCounter++}`,
+					id: `widget-${state.nextWidgetId}`,
 					x: widget.x + 20,
 					y: widget.y + 20,
 					title: `${widget.title} Copy`
@@ -157,7 +163,8 @@ function createDashboardStore() {
 
 				return {
 					...state,
-					widgets: [...state.widgets, newWidget]
+					widgets: [...state.widgets, newWidget],
+					nextWidgetId: state.nextWidgetId + 1
 				}
 			})
 			

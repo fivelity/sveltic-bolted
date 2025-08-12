@@ -10,6 +10,16 @@
 	import AboutModal from './modals/AboutModal.svelte'
 	import HelpModal from './modals/HelpModal.svelte'
 
+	// Svelte action for focusing elements
+	function focusOnMount(node: HTMLElement) {
+		node.focus()
+		return {
+			destroy() {
+				// Cleanup if needed
+			}
+		}
+	}
+
 	let title = 'SenseCanvas'
 	let subtitle = 'Hardware Monitoring Dashboard'
 	let isEditingTitle = false
@@ -93,7 +103,7 @@
 					on:keydown={handleTitleKeyDown}
 					class="title-input"
 					maxlength="50"
-					autofocus
+					use:focusOnMount
 				/>
 			{:else}
 				<h1 on:click={() => isEditingTitle = true} class="title">
@@ -108,7 +118,7 @@
 					on:keydown={handleSubtitleKeyDown}
 					class="subtitle-input"
 					maxlength="100"
-					autofocus
+					use:focusOnMount
 				/>
 			{:else}
 				<p on:click={() => isEditingSubtitle = true} class="subtitle">
