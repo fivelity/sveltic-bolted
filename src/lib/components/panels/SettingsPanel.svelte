@@ -2,14 +2,16 @@
 	import { onMount } from 'svelte'
 	import { Settings, Database, Zap } from 'lucide-svelte'
 	import { dataStore } from '$lib/stores/dataStore'
+	import { themeStore } from '$lib/stores/themeStore'
 
 	$: data = $dataStore
+	$: theme = $themeStore
 
 	let settings = {
 		pollingRate: 1000,
 		enableNotifications: true,
 		enableSounds: false,
-		defaultTheme: 'dark-space',
+		defaultTheme: 'dark-space' as any,
 		autoSave: true,
 		showAnimations: true,
 		compactMode: false,
@@ -34,6 +36,10 @@
 		// Apply settings
 		if (settings.pollingRate !== data.pollingRate) {
 			dataStore.setPollingRate(settings.pollingRate)
+		}
+		
+		if (settings.defaultTheme !== theme.currentTheme) {
+			themeStore.setTheme(settings.defaultTheme)
 		}
 	}
 
@@ -239,6 +245,22 @@
 				</label>
 			</div>
 			<p class="setting-hint">Reduces padding and spacing for more widgets on screen.</p>
+		</div>
+		
+		<div class="setting-group">
+			<label for="default-theme">Default Theme</label>
+			<select 
+				id="default-theme" 
+				class="input"
+				bind:value={settings.defaultTheme}
+			>
+				{#each theme.themes as themeOption}
+					<option value={themeOption.id}>
+						{themeOption.name}
+					</option>
+				{/each}
+			</select>
+			<p class="setting-hint">Theme to use when the application starts.</p>
 		</div>
 	</div>
 

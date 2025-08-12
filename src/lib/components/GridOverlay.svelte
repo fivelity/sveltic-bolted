@@ -4,31 +4,25 @@
 	export let show: boolean
 	export let gridSettings: GridSettings
 
-	$: ({ cellSize } = gridSettings)
+	$: ({ cellSize, cols, rows } = gridSettings)
 </script>
 
 {#if show}
-	<svg class="grid-overlay" width="100%" height="100%">
-		<defs>
-			<pattern
-				id="grid-pattern"
-				width={cellSize}
-				height={cellSize}
-				patternUnits="userSpaceOnUse"
-			>
-				<rect
-					width={cellSize - 1}
-					height={cellSize - 1}
-					fill="none"
-					stroke="var(--grid-color)"
-					stroke-width="1"
-					stroke-dasharray="2,2"
-					opacity="0.4"
-				/>
-			</pattern>
-		</defs>
-		<rect width="100%" height="100%" fill="url(#grid-pattern)" />
-	</svg>
+	<div class="grid-overlay">
+		{#each Array(rows) as _, row}
+			{#each Array(cols) as _, col}
+				<div 
+					class="grid-cell"
+					style="
+						left: {col * cellSize}px;
+						top: {row * cellSize}px;
+						width: {cellSize}px;
+						height: {cellSize}px;
+					"
+				></div>
+			{/each}
+		{/each}
+	</div>
 {/if}
 
 <style>
@@ -40,6 +34,12 @@
 		height: 100%;
 		pointer-events: none;
 		z-index: 1;
-		transition: opacity 0.3s ease;
+	}
+	
+	.grid-cell {
+		position: absolute;
+		border: 1px solid var(--grid-color);
+		opacity: 0.3;
+		box-sizing: border-box;
 	}
 </style>

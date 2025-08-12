@@ -91,10 +91,11 @@
 	}
 
 	.value {
-		font-size: 1.875rem; /* text-3xl */
+		font-size: 2.25rem; /* text-4xl */
 		font-weight: 700;
 		color: #22d3ee; /* text-cyan-400 */
 		line-height: 1;
+		font-family: 'Tomorrow', monospace;
 	}
 
 	.unit {

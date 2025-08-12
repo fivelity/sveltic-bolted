@@ -30,11 +30,11 @@
 
 		const rect = canvasElement.getBoundingClientRect()
 		const { cellSize, gap } = dashboard.gridSettings
-		const totalCellSize = cellSize + gap
 
-		// Calculate complete grid cells that fit perfectly
-		const cols = Math.floor((rect.width + gap) / totalCellSize)
-		const rows = Math.floor((rect.height + gap) / totalCellSize)
+		
+		// Calculate only whole grid cells that fit perfectly
+		const cols = Math.floor(rect.width / cellSize)
+		const rows = Math.floor(rect.height / cellSize)
 
 		dashboardStore.updateGridSettings({ cols, rows })
 	}
@@ -63,8 +63,7 @@
 		let newY = event.clientY - rect.top - dragState.offsetY
 
 		if (dashboard.snapToGrid) {
-			const { cellSize, gap } = dashboard.gridSettings
-			const totalCellSize = cellSize + gap
+			const { cellSize } = dashboard.gridSettings
 			
 			// Snap to grid lines
 			newX = Math.round(newX / cellSize) * cellSize

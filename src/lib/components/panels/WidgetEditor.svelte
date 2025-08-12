@@ -7,7 +7,7 @@
 
 	$: widget = $selectedWidget
 	$: sources = dataSources
-	$: isNewWidget = false
+	$: isNewWidget = !widget
 
 	let showColorPicker = false
 	let tempConfig = {}
@@ -120,8 +120,8 @@
 							class="input"
 							value={widget.width}
 							on:input={(e) => updateWidget({ width: parseInt(e.target.value) })}
-							min="128"
-							step="32"
+							min="160"
+							step="40"
 						/>
 					</div>
 					<div class="form-group">
@@ -132,8 +132,8 @@
 							class="input"
 							value={widget.height}
 							on:input={(e) => updateWidget({ height: parseInt(e.target.value) })}
-							min="128"
-							step="32"
+							min="160"
+							step="40"
 						/>
 					</div>
 				</div>
@@ -221,7 +221,7 @@
 		<div class="editor-actions">
 			<button class="btn btn-primary" on:click={() => dashboardStore.closeLeftPanel()}>
 				<Save size={16} />
-				Done Editing
+				{isNewWidget ? 'Add Widget' : 'Update Widget'}
 			</button>
 		</div>
 	{:else}

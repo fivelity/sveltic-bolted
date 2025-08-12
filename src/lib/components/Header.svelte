@@ -130,18 +130,17 @@
 
 	<div class="header-right">
 		<div class="grid-controls">
-			<label for="grid-size">Grid:</label>
+			<label for="grid-size">Grid Size:</label>
 			<select 
 				id="grid-size" 
 				class="grid-size-select"
 				value={dashboard.gridSettings.cellSize}
 				on:change={(e) => dashboardStore.setGridSize(parseInt(e.target.value))}
 			>
-				<option value="8">8px</option>
-				<option value="16">16px</option>
-				<option value="32">32px</option>
-				<option value="64">64px</option>
-				<option value="128">128px</option>
+				<option value="20">20px</option>
+				<option value="40">40px</option>
+				<option value="80">80px</option>
+				<option value="160">160px</option>
 			</select>
 		</div>
 

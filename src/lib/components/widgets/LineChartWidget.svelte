@@ -145,6 +145,7 @@
 		font-size: 1.125rem; /* text-lg */
 		font-weight: 700;
 		color: #22d3ee; /* text-cyan-400 */
+		font-family: 'Tomorrow', monospace;
 	}
 
 	.chart-container {

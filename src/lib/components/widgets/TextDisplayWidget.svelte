@@ -72,6 +72,7 @@
 		color: #22d3ee; /* text-cyan-400 */
 		font-weight: 700;
 		transition: all 0.3s ease;
+		font-family: 'Tomorrow', monospace;
 	}
 
 	.unit {

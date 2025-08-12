@@ -21,29 +21,66 @@ interface DataState {
 	metrics: Record<string, HardwareMetric>
 }
 
-// Data sources configuration
+// Enhanced data sources with more realistic hardware metrics
 export const dataSources = [
 	{ id: 'cpu-temp', name: 'CPU Temperature', unit: '°C' },
 	{ id: 'cpu-load', name: 'CPU Load', unit: '%' },
+	{ id: 'cpu-freq', name: 'CPU Frequency', unit: 'GHz' },
 	{ id: 'gpu-temp', name: 'GPU Temperature', unit: '°C' },
 	{ id: 'gpu-load', name: 'GPU Load', unit: '%' },
+	{ id: 'gpu-memory', name: 'GPU Memory', unit: 'GB' },
 	{ id: 'ram-usage', name: 'RAM Usage', unit: '%' },
+	{ id: 'ram-speed', name: 'RAM Speed', unit: 'MHz' },
 	{ id: 'disk-usage', name: 'Disk Usage', unit: '%' },
+	{ id: 'disk-temp', name: 'Disk Temperature', unit: '°C' },
 	{ id: 'network-up', name: 'Network Upload', unit: 'MB/s' },
-	{ id: 'network-down', name: 'Network Download', unit: 'MB/s' }
+	{ id: 'network-down', name: 'Network Download', unit: 'MB/s' },
+	{ id: 'fan-speed', name: 'Fan Speed', unit: 'RPM' },
+	{ id: 'power-draw', name: 'Power Draw', unit: 'W' }
 ]
 
 const initialMetrics: Record<string, HardwareMetric> = {}
 
-// Initialize metrics based on data sources
+// Initialize metrics with realistic ranges and starting values
 dataSources.forEach(source => {
+	let min = 0, max = 100, startValue = 50
+	
+	switch (source.id) {
+		case 'cpu-temp':
+		case 'gpu-temp':
+		case 'disk-temp':
+			min = 30; max = 85; startValue = 45 + Math.random() * 20
+			break
+		case 'cpu-freq':
+			min = 1.5; max = 4.8; startValue = 2.5 + Math.random() * 1.5
+			break
+		case 'gpu-memory':
+			min = 0; max = 12; startValue = 2 + Math.random() * 6
+			break
+		case 'ram-speed':
+			min = 2133; max = 4800; startValue = 3200 + Math.random() * 800
+			break
+		case 'network-up':
+		case 'network-down':
+			min = 0; max = 100; startValue = Math.random() * 50
+			break
+		case 'fan-speed':
+			min = 500; max = 3000; startValue = 1200 + Math.random() * 800
+			break
+		case 'power-draw':
+			min = 50; max = 350; startValue = 150 + Math.random() * 100
+			break
+		default:
+			startValue = 20 + Math.random() * 60
+	}
+	
 	initialMetrics[source.id] = {
 		id: source.id,
 		name: source.name,
-		currentValue: Math.random() * 100,
+		currentValue: startValue,
 		unit: source.unit,
-		min: 0,
-		max: source.unit === '°C' ? 100 : (source.unit === 'MB/s' ? 50 : 100),
+		min,
+		max,
 		history: []
 	}
 })
@@ -77,17 +114,54 @@ function createDataStore() {
 					
 					Object.keys(newMetrics).forEach(id => {
 						const metric = newMetrics[id]
-						const variation = (Math.random() - 0.5) * 10
+						
+						// Create more realistic data patterns
+						let variation = 0
+						const time = Date.now() / 1000
+						
+						switch (id) {
+							case 'cpu-temp':
+							case 'gpu-temp':
+								// Temperature with some thermal cycling
+								variation = Math.sin(time / 30) * 3 + (Math.random() - 0.5) * 2
+								break
+							case 'cpu-load':
+							case 'gpu-load':
+								// Load with bursts and idle periods
+								variation = Math.sin(time / 10) * 15 + (Math.random() - 0.5) * 10
+								break
+							case 'cpu-freq':
+								// Frequency scaling
+								variation = Math.sin(time / 20) * 0.5 + (Math.random() - 0.5) * 0.2
+								break
+							case 'network-up':
+							case 'network-down':
+								// Network with occasional spikes
+								variation = Math.random() > 0.9 ? Math.random() * 30 : (Math.random() - 0.5) * 5
+								break
+							case 'fan-speed':
+								// Fan speed correlates with temperature
+								const tempMetric = newMetrics['cpu-temp'] || newMetrics['gpu-temp']
+								if (tempMetric) {
+									variation = (tempMetric.currentValue - 50) * 20 + (Math.random() - 0.5) * 100
+								} else {
+									variation = (Math.random() - 0.5) * 200
+								}
+								break
+							default:
+								variation = (Math.random() - 0.5) * 5
+						}
+						
 						let newValue = metric.currentValue + variation
 						
-						// Keep within bounds
+						// Keep within realistic bounds
 						newValue = Math.max(metric.min, Math.min(metric.max, newValue))
 						
-						// Add to history (keep last 60 points)
+						// Add to history (keep last 120 points = 2 minutes at 1s intervals)
 						const newHistory = [...metric.history, {
 							timestamp: Date.now(),
 							value: newValue
-						}].slice(-60)
+						}].slice(-120)
 						
 						newMetrics[id] = {
 							...metric,
