@@ -19,11 +19,13 @@
 	$: metric = data.metrics[widget.dataSource]
 
 	let showContextMenu = false
-	let showSaveDialog = false
+	let showAddToLibraryDialog = false
+	let showRemoveConfirmation = false
 	let contextMenuX = 0
 	let contextMenuY = 0
 	let templateName = ''
 	let isHovering = false
+	let contextMenuElement: HTMLElement
 
 	const widgetComponents = {
 		'gauge': GaugeWidget,
@@ -36,13 +38,6 @@
 		dispatch('mousedown', event)
 	}
 
-	function handleContextMenu(event: MouseEvent) {
-		event.preventDefault()
-		contextMenuX = event.clientX
-		contextMenuY = event.clientY
-		showContextMenu = true
-	}
-
 	function handleMouseEnter() {
 		isHovering = true
 	}
@@ -51,50 +46,70 @@
 		isHovering = false
 	}
 
+	function toggleContextMenu(event: MouseEvent) {
+		event.stopPropagation()
+		if (showContextMenu) {
+			closeContextMenu()
+		} else {
+			const rect = event.currentTarget.getBoundingClientRect()
+			contextMenuX = rect.right + 8
+			contextMenuY = rect.top
+			showContextMenu = true
+		}
+	}
+
 	function editWidget() {
 		dashboardStore.selectWidget(widget.id)
 		dashboardStore.toggleLeftPanel('editor')
-		showContextMenu = false
+		closeContextMenu()
 	}
 
 	function duplicateWidget() {
 		dashboardStore.duplicateWidget(widget.id)
-		showContextMenu = false
+		closeContextMenu()
 	}
 
 	function addToLibrary() {
 		templateName = `${widget.title} Template`
-		showSaveDialog = true
-		showContextMenu = false
+		showAddToLibraryDialog = true
+		closeContextMenu()
 	}
 
-	function saveTemplate() {
+	function confirmAddToLibrary() {
 		if (templateName.trim()) {
 			dashboardStore.saveWidgetAsTemplate(widget.id, templateName.trim())
-			showSaveDialog = false
+			showAddToLibraryDialog = false
 			templateName = ''
 		}
 	}
 
 	function exportWidget() {
 		dashboardStore.exportWidget(widget.id)
-		showContextMenu = false
+		closeContextMenu()
 	}
 
-	function removeWidget() {
-		if (confirm(`Remove "${widget.title}" widget?`)) {
-			dashboardStore.removeWidget(widget.id)
-		}
-		showContextMenu = false
+	function showRemoveDialog() {
+		showRemoveConfirmation = true
+		closeContextMenu()
+	}
+
+	function confirmRemoveWidget() {
+		dashboardStore.removeWidget(widget.id)
+		showRemoveConfirmation = false
 	}
 
 	function closeContextMenu() {
 		showContextMenu = false
-		showSaveDialog = false
+	}
+
+	function closeAllDialogs() {
+		showContextMenu = false
+		showAddToLibraryDialog = false
+		showRemoveConfirmation = false
 	}
 </script>
 
-<svelte:window on:click={closeContextMenu} on:contextmenu={closeContextMenu} />
+<svelte:window on:click={closeAllDialogs} />
 
 <div
 	class="widget glass-intense {selected ? 'selected' : ''} {dragging ? 'dragging' : ''}"
@@ -105,7 +120,6 @@
 		height: {widget.height}px;
 	"
 	on:mousedown={handleMouseDown}
-	on:contextmenu={handleContextMenu}
 	on:mouseenter={handleMouseEnter}
 	on:mouseleave={handleMouseLeave}
 	role="button"
@@ -114,10 +128,11 @@
 	<div class="widget-header">
 		<h4 class="widget-title">{widget.title}</h4>
 		<button 
-			class="widget-menu-btn {isHovering ? 'visible' : ''}" 
-			on:click={() => showContextMenu = !showContextMenu}
+			class="widget-menu-btn {isHovering || showContextMenu ? 'visible' : ''}" 
+			on:click={toggleContextMenu}
+			title="Widget Options"
 		>
-			<MoreVertical size={14} />
+			<MoreVertical size={16} />
 		</button>
 	</div>
 
@@ -132,50 +147,71 @@
 
 {#if showContextMenu}
 	<div
+		bind:this={contextMenuElement}
 		class="context-menu glass"
 		style="left: {contextMenuX}px; top: {contextMenuY}px;"
-		on:click={closeContextMenu}
+		on:click|stopPropagation
 	>
 		<button on:click={editWidget}>
-			<Edit size={14} />
+			<Edit size={16} />
 			Edit Widget
 		</button>
 		<button on:click={duplicateWidget}>
-			<Copy size={14} />
+			<Copy size={16} />
 			Duplicate
 		</button>
 		<button on:click={addToLibrary}>
-			<FolderPlus size={14} />
+			<FolderPlus size={16} />
 			Add to Library
 		</button>
 		<button on:click={exportWidget}>
-			<Download size={14} />
+			<Download size={16} />
 			Export as JSON
 		</button>
 		<div class="menu-divider"></div>
-		<button on:click={removeWidget} class="danger">
-			<Trash2 size={14} />
+		<button on:click={showRemoveDialog} class="danger">
+			<Trash2 size={16} />
 			Remove
 		</button>
 	</div>
 {/if}
 
-{#if showSaveDialog}
-	<div class="save-dialog-backdrop" on:click={closeContextMenu}>
-		<div class="save-dialog glass-intense" on:click|stopPropagation>
-			<h4>Save to Library</h4>
+{#if showAddToLibraryDialog}
+	<div class="dialog-backdrop" on:click={closeAllDialogs}>
+		<div class="dialog glass-intense" on:click|stopPropagation>
+			<h4>Add Widget to Library</h4>
+			<p>Save this widget configuration as a reusable template.</p>
 			<input
 				type="text"
 				class="input"
 				placeholder="Template name"
 				bind:value={templateName}
-				on:keydown={(e) => e.key === 'Enter' && saveTemplate()}
+				on:keydown={(e) => e.key === 'Enter' && confirmAddToLibrary()}
 				autofocus
 			/>
 			<div class="dialog-actions">
-				<button class="btn btn-secondary" on:click={closeContextMenu}>Cancel</button>
-				<button class="btn btn-primary" on:click={saveTemplate} disabled={!templateName.trim()}>
+				<button class="btn btn-secondary" on:click={() => showAddToLibraryDialog = false}>
+					Cancel
+				</button>
+				<button class="btn btn-primary" on:click={confirmAddToLibrary} disabled={!templateName.trim()}>
 					Save Template
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if showRemoveConfirmation}
+	<div class="dialog-backdrop" on:click={closeAllDialogs}>
+		<div class="dialog glass-intense" on:click|stopPropagation>
+			<h4>Remove Widget</h4>
+			<p>Are you sure you want to remove "<strong>{widget.title}</strong>"? This action cannot be undone.</p>
+			<div class="dialog-actions">
+				<button class="btn btn-secondary" on:click={() => showRemoveConfirmation = false}>
+					Cancel
+				</button>
+				<button class="btn btn-danger" on:click={confirmRemoveWidget}>
+					Remove Widget
 				</button>
 			</div>
 		</div>
@@ -242,15 +278,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		background: transparent;
 		border: none;
-		border-radius: 4px;
+		border-radius: 6px;
 		color: var(--text-secondary);
 		cursor: pointer;
 		opacity: 0;
 		transition: all 0.2s ease;
+		position: relative;
 	}
 
 	.widget-menu-btn.visible,
@@ -261,6 +298,7 @@
 	.widget-menu-btn:hover {
 		background: var(--bg-secondary);
 		color: var(--text-primary);
+		transform: scale(1.05);
 	}
 
 	.widget-content {
@@ -272,11 +310,24 @@
 	.context-menu {
 		position: fixed;
 		z-index: 10000;
-		min-width: 150px;
+		min-width: 180px;
 		border: 1px solid var(--border-color);
-		border-radius: 8px;
+		border-radius: 12px;
 		overflow: hidden;
 		box-shadow: 0 8px 32px var(--shadow-dark);
+		backdrop-filter: blur(16px);
+		animation: contextMenuSlideIn 0.15s ease-out;
+	}
+
+	@keyframes contextMenuSlideIn {
+		from {
+			opacity: 0;
+			transform: scale(0.95) translateY(-4px);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
 	}
 
 	.context-menu button {
@@ -284,18 +335,20 @@
 		align-items: center;
 		gap: 8px;
 		width: 100%;
-		padding: 8px 12px;
+		padding: 10px 16px;
 		background: transparent;
 		border: none;
 		color: var(--text-primary);
 		font-family: inherit;
-		font-size: 13px;
+		font-size: 14px;
+		font-weight: 500;
 		cursor: pointer;
 		transition: background 0.2s ease;
+		text-align: left;
 	}
 
 	.context-menu button:hover {
-		background: var(--bg-secondary);
+		background: rgba(255, 255, 255, 0.08);
 	}
 
 	.context-menu button.danger {
@@ -303,7 +356,7 @@
 	}
 
 	.context-menu button.danger:hover {
-		background: rgba(239, 68, 68, 0.1);
+		background: rgba(239, 68, 68, 0.15);
 	}
 
 	.menu-divider {
@@ -312,7 +365,7 @@
 		margin: 4px 0;
 	}
 
-	.save-dialog-backdrop {
+	.dialog-backdrop {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -326,26 +379,57 @@
 		justify-content: center;
 	}
 
-	.save-dialog {
+	.dialog {
 		background: var(--bg-widget);
 		border: 1px solid var(--border-color);
-		border-radius: 12px;
+		border-radius: 16px;
 		padding: 24px;
-		width: 400px;
-		max-width: 90vw;
+		width: 420px;
+		max-width: 85vw;
+		animation: dialogSlideIn 0.2s ease-out;
 	}
 
-	.save-dialog h4 {
+	@keyframes dialogSlideIn {
+		from {
+			opacity: 0;
+			transform: scale(0.9) translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1) translateY(0);
+		}
+	}
+
+	.dialog h4 {
 		margin: 0 0 16px 0;
 		font-size: 18px;
 		font-weight: 600;
 		color: var(--text-primary);
 	}
 
+	.dialog p {
+		margin: 0 0 16px 0;
+		color: var(--text-secondary);
+		line-height: 1.5;
+	}
+
 	.dialog-actions {
 		display: flex;
-		gap: 8px;
+		gap: 12px;
 		justify-content: flex-end;
-		margin-top: 16px;
+		margin-top: 20px;
+	}
+
+	.btn-danger {
+		background: var(--error);
+		color: white;
+		border: 1px solid var(--error);
+	}
+
+	.btn-danger:hover {
+		background: #dc2626;
+		border-color: #dc2626;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 	}
 </style>
