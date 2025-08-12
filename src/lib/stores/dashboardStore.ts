@@ -321,8 +321,8 @@ function createDashboardStore() {
 			a.click()
 			
 			URL.revokeObjectURL(url)
-		}
-	}
+		},
+
 		// Data polling controls
 		startDataPolling: () => {
 			dataStore.startPolling()
@@ -330,8 +330,8 @@ function createDashboardStore() {
 
 		stopDataPolling: () => {
 			dataStore.stopPolling()
-		},
-
+		}
+	}
 }
 
 function getDefaultWidgetSize(type: WidgetType) {
