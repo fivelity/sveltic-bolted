@@ -49,6 +49,20 @@ function createDashboardStore() {
 				if (saved) {
 					try {
 						const data = JSON.parse(saved)
+						
+						// Find the highest widget ID to prevent duplicates
+						let maxId = 0
+						if (data.widgets && Array.isArray(data.widgets)) {
+							data.widgets.forEach((widget: Widget) => {
+								if (widget.id && widget.id.startsWith('widget-')) {
+									const idNum = parseInt(widget.id.replace('widget-', ''), 10)
+									if (!isNaN(idNum) && idNum > maxId) {
+										maxId = idNum
+									}
+								}
+							})
+						}
+						
 						update(state => ({ 
 							...state, 
 							...data,
@@ -57,26 +71,9 @@ function createDashboardStore() {
 								...state.gridSettings,
 								...data.gridSettings
 							},
-							// Ensure nextWidgetId is set correctly
-							nextWidgetId: data.nextWidgetId || 1
+							// Set nextWidgetId to prevent duplicates
+							nextWidgetId: Math.max(maxId + 1, data.nextWidgetId || 1, 1)
 						}))
-						
-						// Update nextWidgetId based on existing widgets to prevent duplicate keys
-						if (data.widgets && data.widgets.length > 0) {
-							const maxId = Math.max(
-								...data.widgets
-									.map((w: Widget) => w.id)
-									.filter((id: string) => id.startsWith('widget-'))
-									.map((id: string) => parseInt(id.replace('widget-', ''), 10))
-									.filter((num: number) => !isNaN(num))
-							)
-							if (maxId >= 0) {
-								update(state => ({
-									...state,
-									nextWidgetId: maxId + 1
-								}))
-							}
-						}
 					} catch (e) {
 						console.error('Failed to load dashboard data:', e)
 					}

@@ -12,7 +12,12 @@
 
 	// Svelte action for focusing elements
 	function focusOnMount(node: HTMLElement) {
-		node.focus()
+		// Use setTimeout to ensure DOM is ready
+		setTimeout(() => {
+			if (node && typeof node.focus === 'function') {
+				node.focus()
+			}
+		}, 0)
 		return {
 			destroy() {
 				// Cleanup if needed
