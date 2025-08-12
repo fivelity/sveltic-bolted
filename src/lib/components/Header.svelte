@@ -10,21 +10,6 @@
 	import AboutModal from './modals/AboutModal.svelte'
 	import HelpModal from './modals/HelpModal.svelte'
 
-	// Svelte action for focusing elements
-	function focusOnMount(node: HTMLElement) {
-		// Use setTimeout to ensure DOM is ready
-		setTimeout(() => {
-			if (node && typeof node.focus === 'function') {
-				node.focus()
-			}
-		}, 0)
-		return {
-			destroy() {
-				// Cleanup if needed
-			}
-		}
-	}
-
 	let title = 'SenseCanvas'
 	let subtitle = 'Hardware Monitoring Dashboard'
 	let isEditingTitle = false
@@ -34,6 +19,8 @@
 	let showMoreMenu = false
 	let showAboutModal = false
 	let showHelpModal = false
+	let titleInput: HTMLInputElement
+	let subtitleInput: HTMLInputElement
 
 	$: dashboard = $dashboardStore
 	$: theme = $themeStore
@@ -60,6 +47,12 @@
 			window.removeEventListener('keydown', handleKeyDown)
 		}
 	})
+
+	function focusInput(input: HTMLInputElement) {
+		if (input) {
+			setTimeout(() => input.focus(), 0)
+		}
+	}
 
 	function saveTitle() {
 		localStorage.setItem('sensecanvas-title', title)
@@ -94,6 +87,15 @@
 		showThemeSelector = false
 		showMoreMenu = false
 	}
+
+	// Handle editing state changes
+	$: if (isEditingTitle && titleInput) {
+		focusInput(titleInput)
+	}
+	
+	$: if (isEditingSubtitle && subtitleInput) {
+		focusInput(subtitleInput)
+	}
 </script>
 
 <svelte:window on:click={handleClickOutside} />
@@ -103,12 +105,12 @@
 		<div class="title-section">
 			{#if isEditingTitle}
 				<input
+					bind:this={titleInput}
 					bind:value={title}
 					on:blur={saveTitle}
 					on:keydown={handleTitleKeyDown}
 					class="title-input"
 					maxlength="50"
-					use:focusOnMount
 				/>
 			{:else}
 				<h1 on:click={() => isEditingTitle = true} class="title">
@@ -118,12 +120,12 @@
 			
 			{#if isEditingSubtitle}
 				<input
+					bind:this={subtitleInput}
 					bind:value={subtitle}
 					on:blur={saveSubtitle}
 					on:keydown={handleSubtitleKeyDown}
 					class="subtitle-input"
 					maxlength="100"
-					use:focusOnMount
 				/>
 			{:else}
 				<p on:click={() => isEditingSubtitle = true} class="subtitle">

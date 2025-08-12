@@ -13,7 +13,15 @@ interface DashboardState {
 	snapToGrid: boolean
 	isLeftPanelOpen: boolean
 	leftPanelMode: 'widgets' | 'editor' | 'layouts' | 'alerts' | 'settings'
-	nextWidgetId: number
+}
+
+interface WidgetTemplate {
+	id: string
+	name: string
+	type: WidgetType
+	config: Record<string, any>
+	defaultSize: { width: number; height: number }
+	createdAt: string
 }
 
 const initialState: DashboardState = {
@@ -31,13 +39,37 @@ const initialState: DashboardState = {
 	showGrid: true,
 	snapToGrid: true,
 	isLeftPanelOpen: false,
-	leftPanelMode: 'widgets',
-	nextWidgetId: 1
+	leftPanelMode: 'widgets'
+}
+
+// Separate widget ID management
+class WidgetIdManager {
+	private static counter = 1
+	
+	static generateId(): string {
+		return `widget-${Date.now()}-${this.counter++}`
+	}
+	
+	static initializeFromWidgets(widgets: Widget[]) {
+		// Find highest counter from existing widgets
+		let maxCounter = 0
+		widgets.forEach(widget => {
+			if (widget.id.startsWith('widget-')) {
+				const parts = widget.id.split('-')
+				if (parts.length >= 3) {
+					const counter = parseInt(parts[2], 10)
+					if (!isNaN(counter) && counter > maxCounter) {
+						maxCounter = counter
+					}
+				}
+			}
+		})
+		this.counter = maxCounter + 1
+	}
 }
 
 function createDashboardStore() {
 	const { subscribe, set, update } = writable<DashboardState>(initialState)
-
 
 	return {
 		subscribe,
@@ -50,29 +82,20 @@ function createDashboardStore() {
 					try {
 						const data = JSON.parse(saved)
 						
-						// Find the highest widget ID to prevent duplicates
-						let maxId = 0
-						if (data.widgets && Array.isArray(data.widgets)) {
-							data.widgets.forEach((widget: Widget) => {
-								if (widget.id && widget.id.startsWith('widget-')) {
-									const idNum = parseInt(widget.id.replace('widget-', ''), 10)
-									if (!isNaN(idNum) && idNum > maxId) {
-										maxId = idNum
-									}
-								}
-							})
-						}
+						// Ensure widgets is an array
+						const widgets = Array.isArray(data.widgets) ? data.widgets : []
+						
+						// Initialize widget ID counter
+						WidgetIdManager.initializeFromWidgets(widgets)
 						
 						update(state => ({ 
 							...state, 
 							...data,
-							// Ensure we have valid grid settings
+							widgets,
 							gridSettings: {
 								...state.gridSettings,
 								...data.gridSettings
-							},
-							// Set nextWidgetId to prevent duplicates
-							nextWidgetId: Math.max(maxId + 1, data.nextWidgetId || 1, 1)
+							}
 						}))
 					} catch (e) {
 						console.error('Failed to load dashboard data:', e)
@@ -91,8 +114,7 @@ function createDashboardStore() {
 						currentLayoutId: state.currentLayoutId,
 						showGrid: state.showGrid,
 						snapToGrid: state.snapToGrid,
-						gridSettings: state.gridSettings,
-						nextWidgetId: state.nextWidgetId
+						gridSettings: state.gridSettings
 					}))
 					return state
 				})
@@ -105,20 +127,21 @@ function createDashboardStore() {
 			const finalWidth = width || defaultSizes.width
 			const finalHeight = height || defaultSizes.height
 
+			const newWidget: Widget = {
+				id: WidgetIdManager.generateId(),
+				type,
+				x,
+				y,
+				width: finalWidth,
+				height: finalHeight,
+				title: `${type} Widget`,
+				config: getDefaultConfig(type),
+				dataSource: 'cpu-temp'
+			}
+
 			update(state => ({
 				...state,
-				widgets: [...state.widgets, {
-					id: `widget-${state.nextWidgetId}`,
-					type,
-					x,
-					y,
-					width: finalWidth,
-					height: finalHeight,
-					title: `${type} Widget`,
-					config: getDefaultConfig(type),
-					dataSource: 'cpu-temp'
-				}],
-				nextWidgetId: state.nextWidgetId + 1
+				widgets: [...state.widgets, newWidget]
 			}))
 			
 			dashboardStore.persist()
@@ -152,7 +175,7 @@ function createDashboardStore() {
 
 				const newWidget: Widget = {
 					...widget,
-					id: `widget-${state.nextWidgetId}`,
+					id: WidgetIdManager.generateId(),
 					x: widget.x + 20,
 					y: widget.y + 20,
 					title: `${widget.title} Copy`
@@ -160,8 +183,7 @@ function createDashboardStore() {
 
 				return {
 					...state,
-					widgets: [...state.widgets, newWidget],
-					nextWidgetId: state.nextWidgetId + 1
+					widgets: [...state.widgets, newWidget]
 				}
 			})
 			
@@ -179,7 +201,6 @@ function createDashboardStore() {
 
 		// Grid settings
 		setGridSize: (size: number) => {
-			// Ensure size is valid
 			const validSizes = [20, 40, 80, 160]
 			const validSize = validSizes.includes(size) ? size : 40
 			
@@ -262,6 +283,9 @@ function createDashboardStore() {
 			update(state => {
 				const layout = state.layouts.find(l => l.id === id)
 				if (!layout) return state
+
+				// Re-initialize widget ID counter with loaded widgets
+				WidgetIdManager.initializeFromWidgets(layout.widgets)
 
 				return {
 					...state,
@@ -355,13 +379,13 @@ function createDashboardStore() {
 function getDefaultWidgetSize(type: WidgetType) {
 	switch (type) {
 		case 'gauge':
-			return { width: 320, height: 320 } // 8x8 grid cells (40px each)
+			return { width: 320, height: 320 }
 		case 'line-chart':
-			return { width: 480, height: 320 } // 12x8 grid cells
+			return { width: 480, height: 320 }
 		case 'bar-chart':
-			return { width: 320, height: 240 } // 8x6 grid cells
+			return { width: 320, height: 240 }
 		case 'text-display':
-			return { width: 240, height: 160 } // 6x4 grid cells
+			return { width: 240, height: 160 }
 		default:
 			return { width: 320, height: 240 }
 	}
