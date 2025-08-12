@@ -28,8 +28,6 @@
 	}
 </script>
 
-<svelte:window on:click={close} />
-
 <div class="color-picker glass" on:click|stopPropagation>
 	<div class="picker-header">
 		<h5>Choose Color</h5>

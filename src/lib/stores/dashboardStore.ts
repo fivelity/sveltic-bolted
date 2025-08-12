@@ -57,6 +57,20 @@ function createDashboardStore() {
 								...data.gridSettings
 							}
 						}))
+						
+						// Update widget ID counter to prevent duplicate keys
+						if (data.widgets && data.widgets.length > 0) {
+							const maxId = Math.max(
+								...data.widgets
+									.map((w: Widget) => w.id)
+									.filter((id: string) => id.startsWith('widget-'))
+									.map((id: string) => parseInt(id.replace('widget-', ''), 10))
+									.filter((num: number) => !isNaN(num))
+							)
+							if (maxId >= widgetIdCounter) {
+								widgetIdCounter = maxId + 1
+							}
+						}
 					} catch (e) {
 						console.error('Failed to load dashboard data:', e)
 					}

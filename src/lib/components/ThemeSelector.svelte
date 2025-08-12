@@ -15,8 +15,6 @@
 	}
 </script>
 
-<svelte:window on:click={close} />
-
 {#if show}
 	<div class="theme-selector glass" on:click|stopPropagation>
 		<div class="selector-header">
