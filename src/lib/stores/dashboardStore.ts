@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store'
+import { get } from 'svelte/store'
 import type { Widget, WidgetType, GridSettings, Layout } from '$lib/types'
 
 interface DashboardState {
@@ -290,8 +291,13 @@ function createDashboardStore() {
 		},
 
 		exportWidget: (widgetId: string) => {
-			const state = get({ subscribe })
-			const widget = state.widgets.find(w => w.id === widgetId)
+			let currentState: DashboardState
+			const unsubscribe = subscribe(state => {
+				currentState = state
+			})
+			unsubscribe()
+			
+			const widget = currentState!.widgets.find(w => w.id === widgetId)
 			if (!widget) return
 
 			const exportData = {
