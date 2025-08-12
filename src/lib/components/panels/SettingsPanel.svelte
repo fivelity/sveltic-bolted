@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { onDestroy } from 'svelte'
 	import { Settings, Database, Zap } from 'lucide-svelte'
 	import { dataStore } from '$lib/stores/dataStore'
 	import { themeStore } from '$lib/stores/themeStore'
@@ -17,6 +18,8 @@
 		compactMode: false,
 		debugMode: false
 	}
+
+	let saveTimeoutId: number | undefined
 
 	onMount(() => {
 		// Load settings from localStorage
@@ -130,11 +133,18 @@
 		input.click()
 	}
 
-	// Auto-save settings when changed
-	$: if (settings) {
-		// Debounce auto-save to prevent excessive saves
-		const timeoutId = setTimeout(saveSettings, 500)
-		return () => clearTimeout(timeoutId)
+	onDestroy(() => {
+		if (saveTimeoutId) {
+			clearTimeout(saveTimeoutId)
+		}
+	})
+
+	// Auto-save settings when changed (debounced)
+	$: if (settings && typeof window !== 'undefined') {
+		if (saveTimeoutId) {
+			clearTimeout(saveTimeoutId)
+		}
+		saveTimeoutId = setTimeout(saveSettings, 500)
 	}
 </script>
 
